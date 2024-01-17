@@ -1,0 +1,10 @@
+FROM golang:1.18-bullseye
+
+EXPOSE 80
+
+WORKDIR /usr/src/app
+COPY . .
+
+RUN go build main.go
+
+CMD [ "go", "run", "main.go" ]

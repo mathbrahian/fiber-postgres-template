@@ -9,8 +9,15 @@ import (
 	"errors"
 	"strings"
 	"net/http"
-	"io/ioutil"
+	// "io/ioutil"
+	"encoding/json"
 )
+
+import uuid "github.com/google/uuid"
+
+type DeserializeUser struct {
+	ID uuid.UUID  `json:"id"`
+}
 
 /* 
 	REQUIRED(Any middleware must have this)
@@ -21,8 +28,8 @@ import (
 */
 type Config struct {
 	Filter         func(c *fiber.Ctx) bool // Required
-	RequestAUTH		func(c *fiber.Ctx) (*string, error)
-	// Unauthorized fiber.Handler  // middleware specfic
+	RequestAUTH		func(c *fiber.Ctx) (*DeserializeUser, error)
+	Unauthorized fiber.Handler  // middleware specfic
 }
 
 /*
@@ -33,7 +40,7 @@ type Config struct {
 var ConfigDefault = Config{
 	Filter:       nil,
 	RequestAUTH: nil,
-	// Unauthorized: nil,
+	Unauthorized: nil,
 }
 
 /*
@@ -56,7 +63,8 @@ func configDefault(config ...Config) Config {
 	}
 
 	if cfg.RequestAUTH == nil {
-		cfg.RequestAUTH = func(c *fiber.Ctx) (*string, error){
+
+		cfg.RequestAUTH = func(c *fiber.Ctx) (*DeserializeUser, error){
 
 			authHeader := c.Get("Authorization")
 
@@ -64,32 +72,50 @@ func configDefault(config ...Config) Config {
 				return nil, errors.New("Authorization header is required")
 			}
 
-			bearerToken := strings.SplitN(authHeader, " ", -1)
+			bearerTokenList := strings.SplitN(authHeader, " ", -1)
 
-
-			if len(bearerToken) == 2 && bearerToken[0]=="Bearer"{
-				token := bearerToken[1]
-				req, err := http.NewRequest(http.MethodGet, "http://host.docker.internal:6050/user/api/auth", nil)
-				if err != nil {
-					fmt.Printf("client: error making http request: %s\n", err)
-				}
-				req.Header.Set("Content-Type", "application/json")
-				bearerToken2 := fmt.Sprintf("Bearer %s", token)
-				fmt.Printf(bearerToken2)
-				req.Header.Set("Authorization", bearerToken2)			
-				res, err := http.DefaultClient.Do(req)
-				if err != nil {
-					fmt.Printf("client: error making http request: %s\n", err)
-				}
-				body, err := ioutil.ReadAll(res.Body)
-				bodyString := string(body)
-				return &bodyString, nil
+			if len(bearerTokenList) != 2 && bearerTokenList[0] !="Bearer"{
+				return nil, errors.New("Error parsing token")
 			}
 
-			return nil, errors.New("Authorization header is required")
+			req, err := http.NewRequest(http.MethodGet, "http://host.docker.internal:6050/user/api/auth", nil)
+			if err != nil {
+				return nil, errors.New("Could not create request")
+			}			
+			
+		
+			bearerToken := fmt.Sprintf("Bearer %s", bearerTokenList[1])
+			req.Header.Set("Content-Type", "application/json")
+			req.Header.Set("Authorization", bearerToken)
 
+			res, err := http.DefaultClient.Do(req)
+			
+			if err != nil {
+				return nil, errors.New("Error making http request")
+			}
+
+			defer res.Body.Close()
+
+			var user DeserializeUser
+
+			err = json.NewDecoder(res.Body).Decode(&user)
+			
+
+			if err != nil {
+				return nil, errors.New("Could not deserialezer response body")
+			}
+
+		
+			return &user, nil
 		}
 	}
+
+	if cfg.Unauthorized == nil {
+		cfg.Unauthorized = func(c *fiber.Ctx) error {
+			return c.SendStatus(fiber.StatusUnauthorized)
+		}
+	}
+
 
 	return cfg
 }
@@ -111,17 +137,15 @@ func New(config Config) fiber.Handler {
 			fmt.Println("Midddle was skipped")
 			return c.Next()
 		}
-		fmt.Println("Midddle was run")
 
 		requestAuth, err := cfg.RequestAUTH(c)
+
 
 		if err == nil {
 			c.Locals("requestAuth", *requestAuth)
 			return c.Next()
 		}
-		fmt.Println("Midddle error")
-
-		return c.Next()
-		// return cfg.Unauthorized(c)
+	
+		return cfg.Unauthorized(c)
 	}
 }

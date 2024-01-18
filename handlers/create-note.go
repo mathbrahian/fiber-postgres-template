@@ -1,20 +1,34 @@
 package handlers
 
-import uuid "github.com/google/uuid"
-
 import "github.com/gofiber/fiber/v2"
 
 import "fiber-postgres-template/model"
 
 import "fiber-postgres-template/database"
 
-import "fmt"
+import "fiber-postgres-template/middleware"
+
+import ("fmt"
+"reflect")
 
 func CreateNote(c *fiber.Ctx) error {
 
-	request_1 := c.Locals("requestAuth")
+	user := c.Locals("requestAuth")
 
-	fmt.Println(request_1)
+	fmt.Println(user)
+
+	fmt.Println(reflect.TypeOf(user))
+
+	// fmt.Println(user.ID)
+
+	details, ok :=user.(middleware.DeserializeUser)
+
+	if ok {
+		fmt.Println(details.ID)
+	} else{
+		fmt.Println("raios")
+	}
+
 		
 	type DeserializeNote struct {
 		Note string `json:"note"`
@@ -27,9 +41,8 @@ func CreateNote(c *fiber.Ctx) error {
 	}
 
 	nota := model.Note{
-		// ID: uuid.New(),
 		Note: newNote.Note,
-		User: uuid.New(),
+		User: details.ID,
 	}
 
 	db := database.DB

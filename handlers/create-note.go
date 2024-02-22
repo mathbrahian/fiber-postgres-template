@@ -1,15 +1,14 @@
 package handlers
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"fiber-postgres-template/database"
+	"fiber-postgres-template/middleware"
+	"fiber-postgres-template/model"
+	"fmt"
+	"reflect"
 
-import "fiber-postgres-template/model"
-
-import "fiber-postgres-template/database"
-
-import "fiber-postgres-template/middleware"
-
-import ("fmt"
-"reflect")
+	"github.com/gofiber/fiber/v2"
+)
 
 func CreateNote(c *fiber.Ctx) error {
 
@@ -21,15 +20,14 @@ func CreateNote(c *fiber.Ctx) error {
 
 	// fmt.Println(user.ID)
 
-	details, ok :=user.(middleware.DeserializeUser)
+	details, ok := user.(middleware.DeserializeUser)
 
 	if ok {
 		fmt.Println(details.ID)
-	} else{
+	} else {
 		fmt.Println("raios")
 	}
 
-		
 	type DeserializeNote struct {
 		Note string `json:"note"`
 	}
@@ -46,8 +44,8 @@ func CreateNote(c *fiber.Ctx) error {
 	}
 
 	db := database.DB
-	
+
 	db.Create(&nota)
-	
+
 	return c.Status(201).JSON(fiber.Map{"status": "success", "note": nota})
 }

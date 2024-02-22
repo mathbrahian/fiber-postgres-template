@@ -5,10 +5,10 @@ import (
 	"gorm.io/gorm"
 )
 
-func ConnectDB(){
+func ConnectDB() {
 	var err error
 
-	dsn := "host=auth_db user=postgres password=postgres dbname=postgres port=5432"
+	dsn := "host=note_db user=postgres password=postgres dbname=postgres port=5432"
 	DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 
 	if err != nil {

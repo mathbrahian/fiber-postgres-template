@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/spf13/viper"
 
 	uuid "github.com/google/uuid"
 )
@@ -55,7 +56,13 @@ func configDefault(config ...Config) Config {
 				return nil, errors.New("error parsing token")
 			}
 
-			req, err := http.NewRequest(http.MethodGet, "http://host.docker.internal:6050/user/api/auth", nil)
+			viper.SetConfigFile(".env")
+
+			viper.ReadInConfig()
+
+			host_auth, _ := viper.Get("HOST_AUTH").(string)
+
+			req, err := http.NewRequest(http.MethodGet, host_auth, nil)
 			if err != nil {
 				return nil, errors.New("could not create request")
 			}

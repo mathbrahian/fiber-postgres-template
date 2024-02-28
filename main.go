@@ -18,8 +18,6 @@ func main() {
 
 	app := fiber.New()
 
-	app.Post("/hi", handlers.CreateNote)
-
 	app.Use(middleware.New(middleware.Config{}))
 
 	app.Post("/", handlers.CreateNote)

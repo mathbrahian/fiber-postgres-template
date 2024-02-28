@@ -4,8 +4,6 @@ import (
 	"fiber-postgres-template/database"
 	"fiber-postgres-template/middleware"
 	"fiber-postgres-template/model"
-	"fmt"
-	"reflect"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -14,19 +12,7 @@ func CreateNote(c *fiber.Ctx) error {
 
 	user := c.Locals("requestAuth")
 
-	fmt.Println(user)
-
-	fmt.Println(reflect.TypeOf(user))
-
-	// fmt.Println(user.ID)
-
-	details, ok := user.(middleware.DeserializeUser)
-
-	if ok {
-		fmt.Println(details.ID)
-	} else {
-		fmt.Println("raios")
-	}
+	details, _ := user.(middleware.DeserializeUser)
 
 	type DeserializeNote struct {
 		Note string `json:"note"`

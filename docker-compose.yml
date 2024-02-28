@@ -19,7 +19,9 @@ services:
           memory: 300M
 
   note:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile.develop
     volumes:
       - .:/usr/src/app
     ports:

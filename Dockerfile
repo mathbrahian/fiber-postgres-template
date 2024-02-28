@@ -1,10 +1,15 @@
-FROM golang:1.18-bullseye
+FROM golang:1.18-bullseye AS builder
 
 EXPOSE 80
 
-WORKDIR /usr/src/app
+WORKDIR /usr/src
+
 COPY . .
 
-RUN go build main.go
+RUN go build -o fiber-postgres-template .
 
-CMD [ "go", "run", "main.go" ]
+FROM debian:bullseye-slim
+
+COPY --from=builder /usr/src/fiber-postgres-template /usr/local/bin/fiber-postgres-template
+
+CMD ["fiber-postgres-template"]

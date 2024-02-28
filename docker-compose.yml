@@ -1,7 +1,7 @@
 version: '3.9'
 
 services:
-  note_db:
+  sportman_db:
     image: postgres:15-bullseye
     environment:
       POSTGRES_DB: postgres
@@ -11,14 +11,14 @@ services:
     ports:
       - 6200:5432
     networks:
-      - note_net
+      - sportman_net
     deploy:  
       resources:
         limits:
           cpus: '0.2'
           memory: 300M
 
-  note:
+  sportman:
     build:
       context: .
       dockerfile: Dockerfile.develop
@@ -27,17 +27,17 @@ services:
     ports:
       - 6250:80
     networks:
-      - note_net
+      - sportman_net
     deploy:
       resources:
         limits:
           cpus: '4'
           memory: 2000M
     depends_on:
-      note_db:
+      sportman_db:
         condition: service_started
 
 networks:
-  note_net:
+  sportman_net:
     driver: bridge
-    name: note_net
+    name: sportman_net

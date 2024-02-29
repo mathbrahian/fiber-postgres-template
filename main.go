@@ -13,11 +13,11 @@ func main() {
 
 	db := database.DB
 
-	db.AutoMigrate(&model.Sportman{})
+	db.AutoMigrate(&model.Sportmen{}, &model.SportmenSport{})
 
 	app := fiber.New()
 
-	app.Post("/", handlers.CreateSportman)
+	app.Post("/", handlers.CreateSportmen)
 
 	app.Listen(":80")
 }

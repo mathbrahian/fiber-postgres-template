@@ -8,11 +8,11 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func CreateSportman(c *fiber.Ctx) error {
+func CreateSportmen(c *fiber.Ctx) error {
 
-	Sportman := new(model.Sportman)
+	Sportmen := new(model.Sportmen)
 
-	if err := c.BodyParser(Sportman); err != nil {
+	if err := c.BodyParser(Sportmen); err != nil {
 		return err
 	}
 
@@ -20,29 +20,19 @@ func CreateSportman(c *fiber.Ctx) error {
 
 	validate = validator.New(validator.WithRequiredStructEnabled())
 
-	err := validate.Struct(Sportman)
+	err1 := validate.Struct(Sportmen)
 
-	if err != nil {
+	err2 := validate.Struct(Sportmen.Sport)
 
-		// this check is only needed when your code could produce
-		// an invalid value for validation such as interface with nil
-		// value most including myself do not usually have code like this.
-		// if _, ok := err.(*validator.InvalidValidationError); ok {
-		// 	fmt.Println("aja")
-		// 	fmt.Println(err)
-		// }
+	if err1 != nil && err2 != nil {
 
-		// for _, err := range err.(validator.ValidationErrors) {
-
-		// 	fmt.Println(err.Field())
-		// }
 		return c.Status(400).JSON(fiber.Map{"status": "error"})
 
 	}
 
 	db := database.DB
 
-	db.Create(&Sportman)
+	db.Create(&Sportmen)
 
-	return c.Status(201).JSON(fiber.Map{"status": "success", "sportman": Sportman})
+	return c.Status(201).JSON(fiber.Map{"status": "success", "sportman": Sportmen})
 }

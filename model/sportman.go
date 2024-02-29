@@ -24,7 +24,7 @@ type Sportmen struct {
 }
 
 type SportmenSport struct {
-	ID     int       `gorm:"primaryKey;"  json:"id"`
+	ID     uint      `gorm:"primaryKey;"  json:"id"`
 	UserId uuid.UUID `gorm:"type:uuid;" json:"user"`
 	Sport  string    `json:"sport" validate:"oneof=basketball cycling"`
 }

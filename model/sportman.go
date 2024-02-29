@@ -7,8 +7,7 @@ import (
 )
 
 type Sportmen struct {
-	ID               uuid.UUID `gorm:"primary_key;type:uuid;default:uuid_generate_v4();" json:"id"`
-	User             uuid.UUID `json:"user" validate:"required"`
+	UserId           uuid.UUID `gorm:"primaryKey;type:uuid;" json:"user" validate:"required"`
 	Name             string    `json:"name" validate:"required"`
 	LastName         string    `json:"last_name" validate:"required"`
 	Age              int       `json:"age" validate:"required"`
@@ -21,11 +20,11 @@ type Sportmen struct {
 	LengthResidence  int       `json:"length_residence" validate:"required"`
 	CreatedAt        time.Time
 	UpdatedAt        time.Time
-	Sport            []SportmenSport `gorm:"foreignKey:User" validate:"dive"`
+	Sport            []SportmenSport `gorm:"foreignKey:UserId" validate:"dive"`
 }
 
 type SportmenSport struct {
-	ID    int       `gorm:"primary_key" json:"id"`
-	User  uuid.UUID `gorm:"type:uuid;" json:"user"`
-	Sport string    `json:"sport" validate:"oneof=basketball cycling"`
+	ID     int       `gorm:"primaryKey;"  json:"id"`
+	UserId uuid.UUID `gorm:"type:uuid;" json:"user"`
+	Sport  string    `json:"sport" validate:"oneof=basketball cycling"`
 }

@@ -26,13 +26,25 @@ func CreateSportmen(c *fiber.Ctx) error {
 
 	if err1 != nil && err2 != nil {
 
-		return c.Status(400).JSON(fiber.Map{"status": "error"})
+		return c.Status(400).JSON(fiber.Map{"status": "error", "message": "field validation error"})
 
 	}
 
 	db := database.DB
 
-	db.Create(&Sportmen)
+	var OldSportmen model.Sportmen
+
+	result_1 := db.Find(&OldSportmen, Sportmen.UserId)
+
+	if result_1.RowsAffected > 0 {
+		return c.Status(400).JSON(fiber.Map{"status": "error", "message": "uuid"})
+	}
+
+	result_2 := db.Create(&Sportmen)
+
+	if result_2.Error != nil {
+		return c.Status(400).JSON(fiber.Map{"status": "error", "message": "error in creation"})
+	}
 
 	return c.Status(201).JSON(fiber.Map{"status": "success", "sportman": Sportmen})
 }

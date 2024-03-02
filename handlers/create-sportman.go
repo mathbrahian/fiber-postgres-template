@@ -46,5 +46,5 @@ func CreateSportmen(c *fiber.Ctx) error {
 		return c.Status(400).JSON(fiber.Map{"status": "error", "message": "error in creation"})
 	}
 
-	return c.Status(201).JSON(fiber.Map{"status": "success", "sportman": Sportmen})
+	return c.Status(201).JSON(fiber.Map{"status": "success", "sportmen": Sportmen})
 }

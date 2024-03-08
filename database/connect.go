@@ -15,11 +15,13 @@ func ConnectDB() {
 
 	viper.ReadInConfig()
 
-	db_user, _ := viper.Get("DB_USER").(string)
-	db_host, _ := viper.Get("DB_HOST").(string)
-	db_name, _ := viper.Get("DB_NAME").(string)
-	db_password, _ := viper.Get("DB_PASSWORD").(string)
-	db_port, _ := viper.Get("DB_PORT").(string)
+	viper.AutomaticEnv()
+
+	db_user, _ := viper.Get("DB_SPORT_USER").(string)
+	db_host, _ := viper.Get("DB_SPORT_HOST").(string)
+	db_name, _ := viper.Get("DB_SPORT_NAME").(string)
+	db_password, _ := viper.Get("DB_SPORT_PASSWORD").(string)
+	db_port, _ := viper.Get("DB_SPORT_PORT").(string)
 
 	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s",
 		db_host, db_user, db_password, db_name, db_port)

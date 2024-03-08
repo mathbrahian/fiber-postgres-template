@@ -17,11 +17,11 @@ func main() {
 
 	app := fiber.New()
 
-	app.Get("/ping", func(c *fiber.Ctx) error {
+	app.Get("/sport/ping", func(c *fiber.Ctx) error {
 		return c.Status(200).SendString("ping")
 	})
 
-	app.Post("/", handlers.CreateSportmen)
+	app.Post("/sport", handlers.CreateSportmen)
 
 	app.Listen(":80")
 }

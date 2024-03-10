@@ -6,6 +6,7 @@ import (
 	"fiber-postgres-template/model"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/logger"
 )
 
 func main() {
@@ -16,6 +17,8 @@ func main() {
 	db.AutoMigrate(&model.Sportmen{}, &model.SportmenSport{})
 
 	app := fiber.New()
+
+	app.Use(logger.New())
 
 	app.Get("/sport/ping", func(c *fiber.Ctx) error {
 		return c.Status(200).SendString("ping")

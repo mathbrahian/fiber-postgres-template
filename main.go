@@ -3,6 +3,7 @@ package main
 import (
 	"fiber-postgres-template/database"
 	"fiber-postgres-template/handlers"
+	"fiber-postgres-template/middleware"
 	"fiber-postgres-template/model"
 
 	"github.com/gofiber/fiber/v2"
@@ -25,6 +26,12 @@ func main() {
 	})
 
 	app.Post("/sport", handlers.CreateSportmen)
+
+	app.Delete("/sport", handlers.DeleteSportmen)
+
+	app.Use(middleware.New(middleware.Config{}))
+
+	app.Get("/sport", handlers.GetSport)
 
 	app.Listen(":80")
 }

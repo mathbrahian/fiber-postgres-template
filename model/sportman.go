@@ -23,6 +23,10 @@ type Sportmen struct {
 	Sport            []SportmenSport `gorm:"foreignKey:UserId" validate:"dive"`
 }
 
+type SportmenDelete struct {
+	UserId uuid.UUID `json:"user" validate:"required"`
+}
+
 type SportmenSport struct {
 	ID     uint      `gorm:"primaryKey;"  json:"id"`
 	UserId uuid.UUID `gorm:"type:uuid;" json:"user"`
